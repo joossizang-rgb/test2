@@ -4,8 +4,10 @@ __pycache__/
 *.pyc
 *.pyo
 
-# 캐시 (Render는 재배포시 초기화되므로 무의미)
-cache/
+# 일일 캐시만 제외 (시나리오 풀은 포함)
+cache/news_*
+cache/facts_*
+cache/latest.json
 
 # 시크릿 (절대 커밋 금지)
 .env
