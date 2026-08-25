@@ -115,9 +115,13 @@ def build_daily_cache():
         "topics": wiki_topics,
         "tips": ["출처: 위키백과 (CC BY-SA)", "모르는 주제라면 '처음 들었어요, 뭔가요?'라고 물어보며 대화를 시작해 보세요"],
     }
-    (CACHE_DIR / f"facts_{today}.json").write_text(
-        json.dumps(facts_payload, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+    if not wiki_topics:
+        # 빈 결과는 캐시에 저장하지 않음 — 다음 요청 시 실시간 폴백이 동작하도록
+        print("   ⚠️ 위키백과 0개 — 캐시 저장 스킵 (실시간 폴백 유도)")
+    else:
+        (CACHE_DIR / f"facts_{today}.json").write_text(
+            json.dumps(facts_payload, ensure_ascii=False, indent=2), encoding="utf-8"
+        )
     print(f"   ✓ 위키백과 {len(wiki_topics)}개 저장")
 
     # 3) 최신 캐시 심볼릭 링크 갱신 (latest.json)
