@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# 캐시 (Render는 재배포시 초기화되므로 무의미)
+cache/
+
+# 시크릿 (절대 커밋 금지)
+.env
+*.secret
+
+# OS/에디터
+.DS_Store
+Thumbs.db
