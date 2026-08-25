@@ -203,7 +203,32 @@ def api_facts(n: int = 5):
             topics = data["topics"][:n]
             return {**data, "topics": topics, "free_count": min(n, len(topics))}
 
-    # 캐시 없음 → 실시간 폴백
+    # 캐시 없음 → 사전 생성 풀(featured_pool.json)에서 무작위 추출
+    pool_file = cache_dir / "featured_pool.json"
+    if pool_file.exists():
+        try:
+            pool = json.loads(pool_file.read_text(encoding="utf-8"))
+            if len(pool) >= 3:
+                picked = random.sample(pool, k=min(n, len(pool)))
+                topics = [
+                    {
+                        "title": it["title"],
+                        "opener": f"혹시 '{it['title']}'에 대해 들어본 적 있어요? 아는 분 드물어요.",
+                        "hook": it.get("hook", ""),
+                        "summary": it.get("summary", ""),
+                        "url": it.get("url", ""),
+                        "locked": False,
+                    }
+                    for it in picked
+                ]
+                return {"source": "wikipedia", "free_count": len(topics), "premium_count": 0,
+                        "topics": topics,
+                        "tips": ["출처: 위키백과 (CC BY-SA, 링크 확인)",
+                                 "모르는 주제라면 '처음 들었어요, 뭔가요?'라고 물어보며 대화를 시작해 보세요"]}
+        except Exception:
+            pass
+
+    # 풀도 없음 → 실시간 수집 시도
     try:
         items = fetch_interesting(n=n)
     except Exception as e:
