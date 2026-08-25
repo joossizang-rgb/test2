@@ -17,6 +17,9 @@ from payment import PRICE, new_order_id, verify_payment
 from prompts import ALLERGIES, FREE_TOPIC_COUNT, SITUATIONS
 from wiki_source import fetch_interesting
 
+# 서버 기동 후 백그라운드로 일일 캐시 생성 (포트 바인딩을 막지 않음)
+from batch_worker import start_background_batch
+
 BASE_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BASE_DIR / ".." / "frontend"
 
@@ -29,6 +32,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.on_event("startup")
+def on_startup():
+    """기동 직후 백그라운드에서 일일 캐시 생성 (포트는 즉시 열림)."""
+    start_background_batch()
 
 
 @app.get("/api/meta")
