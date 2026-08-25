@@ -206,8 +206,12 @@ def api_facts(n: int = 5):
     # 캐시 없음 → 실시간 폴백
     try:
         items = fetch_interesting(n=n)
-    except Exception:
+    except Exception as e:
         items = []
+        print(f"[facts] 실시간 수집 예외: {e}", flush=True)
+
+    if not items:
+        print("[facts] 0개 — featured 목록 로드 또는 필터 문제 의심", flush=True)
 
     if items:
         topics = [
